@@ -19,20 +19,21 @@ export default class App extends React.Component {
   _onGLContextCreate = async gl => {
     const arSession = await this._glView.startARSessionAsync();
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      gl.drawingBufferWidth / gl.drawingBufferHeight,
-      0.1,
+    const camera = ExpoTHREE.createARCamera(
+      arSession,
+      gl.drawingBufferWidth,
+      gl.drawingBufferHeight,
+      0.01,
       1000
     );
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    scene.background = ExpoTHREE.createARBackgroundTexture(arSession, renderer);
+    const geometry = new THREE.BoxGeometry(0.07, 0.07, 0.07);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
+    cube.position.z = -0.5;
     scene.add(cube);
-    camera.position.z = 5;
 
     const animate = () => {
       requestAnimationFrame(animate);
